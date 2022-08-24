@@ -1,4 +1,4 @@
-# Operator Academy Project Template
+# Kytte's Operator Academy Project Template
 
 Welcome to Week 6, the project week! During this week, we'll put together everything we've learned during Operator Academy to build a final project.
 
