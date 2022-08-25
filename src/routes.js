@@ -2,27 +2,24 @@ const express = require("express");
 const router = express.Router();
 const VoiceResponse = require('twilio').twiml.VoiceResponse;
 const urlencoded = require('body-parser').urlencoded;
+const ivrRouter = require('./ivr/router');
 
 // Axios allows us to make HTTP requests from our app
 const axios = require("axios").default;
 
-// My menu
-router.use(urlencoded({ extended: false }));
-router.post('/voice', (request, response) => {
-  // Use the Twilio Node.js SDK to build an XML response
-  const twiml = new VoiceResponse();
+// Import Twilio and initialize the client.
+// IMPORTANT: Remember to set environment variables for your Account SID and Auth Token.
+const twilio = require("twilio");
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = twilio(accountSid, authToken);
 
-  // Use the <Gather> verb to collect user input
-  const gather = twiml.gather({ numDigits: 1 });
-  gather.say('Welcome to Verbal Dice Roller. Please enter the number of die you wish to roll (0-9) with 0 equaling 10');
-
-  // If the user doesn't enter input, loop
-  twiml.redirect('/voice');
-
-  // Render the response as XML in reply to the webhook request
-  response.type('text/xml');
-  response.send(twiml.toString());
+// GET: / - My Menu home page
+router.get('/', (req, res) => {
+  res.render('index');
 });
+
+router.use('/ivr', twilio.webhook({validate: false}), ivrRouter);
 
 
 // Handle a GET request to the root directory,
